@@ -53,9 +53,54 @@ public class AuthController : ControllerBase
         if (!ok)
             return Unauthorized(new { message = "Invalid credentials" });
 
-        var token = await _jwtTokenService.CreateTokenAsync(user);
+        // refresh token oluştur
+        user.RefreshToken = GenerateRefreshToken();
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
+        await _userManager.UpdateAsync(user);
 
-        return Ok(new { accessToken = token });
+        var accessToken = await _jwtTokenService.CreateTokenAsync(user);
+
+        return Ok(new
+        {
+            accessToken,
+            refreshToken = user.RefreshToken
+        });
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+    {
+        var user = _userManager.Users
+            .FirstOrDefault(u =>
+                u.RefreshToken == request.RefreshToken &&
+                u.RefreshTokenExpiresAt > DateTime.UtcNow);
+
+        if (user is null)
+            return Unauthorized(new { message = "Invalid refresh token" });
+
+        // refresh token rotation (güvenlik)
+        user.RefreshToken = GenerateRefreshToken();
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
+        await _userManager.UpdateAsync(user);
+
+        var newAccessToken = await _jwtTokenService.CreateTokenAsync(user);
+
+        return Ok(new
+        {
+            accessToken = newAccessToken,
+            refreshToken = user.RefreshToken
+        });
+    }
+
+
+
+    // Basit bir refresh token oluşturucu = Yardımcı Fonksiyon
+    private static string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+    }
+
 }
+
+
     
