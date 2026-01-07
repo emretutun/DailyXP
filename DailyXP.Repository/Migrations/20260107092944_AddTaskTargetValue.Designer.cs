@@ -3,6 +3,7 @@ using System;
 using DailyXP.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DailyXP.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260107092944_AddTaskTargetValue")]
+    partial class AddTaskTargetValue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,19 +65,10 @@ namespace DailyXP.Repository.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("ClientRecordedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
                     b.Property<int>("EarnedXp")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsSuspicious")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Source")
                         .HasColumnType("integer");
 
                     b.Property<int>("TaskDefinitionId")
