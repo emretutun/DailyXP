@@ -1,8 +1,9 @@
 using DailyXP.Services.DependencyInjection;
-using DailyXP.Repository.Data;  
+using DailyXP.Repository.Data;
 
-
+//builder, app oluşturma ve konfigürasyon işlemleri
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddDailyXpServices(builder.Configuration);
 
